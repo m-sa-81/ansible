@@ -1,0 +1,37 @@
+---
+- name: Updates Oracle Linux
+  tags: always
+  dnf:
+    update_only: yes
+    update_cache: yes
+  when: ansible_distribution == "Fedora"    
+
+- name: Updates Ubuntu
+  tags: always
+  apt:
+    upgrade: dist
+    update_cache: yes
+  when: ansible_distribution == "Ubuntu"    
+
+- name: create user
+  tags: always
+  user:
+    name: ansible  
+    groups: root
+
+- name: Passwortloses sudo 
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/ansible
+    content: |
+      ansible ALL=(ALL) NOPASSWD: ALL
+    owner: root
+    group: root
+    mode: '0440'
+
+- name: Add key to user...
+  tags: always
+  ansible.posix.authorized_key:
+    user: ansible
+    state: present
+    key: "{{ lookup('file', '~/.ssh/ansiblekey.pub') }}"    
+
