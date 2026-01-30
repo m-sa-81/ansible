@@ -1,4 +1,8 @@
 ---
+- name: Zeitzone setzen
+  community.general.timezone:
+    name: "Europe/Berlin"
+
 - name: Updates Oracle Linux
   tags: always
   dnf:

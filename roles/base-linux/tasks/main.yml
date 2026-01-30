@@ -1,0 +1,8 @@
+- name: Installiere chrony + fail2ban
+  package:
+    name: 
+      - chrony
+      - fail2ban
+      - htop
+    state: present
+
