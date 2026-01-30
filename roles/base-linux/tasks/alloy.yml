@@ -38,16 +38,28 @@
 
       }
 
-            
+
       local.file_match "local_files" {
         path_targets = [
           { __path__ = "/var/log/*.log" },
-          { __path__ = "/var/log/nginx/*.log" },
+          //{ __path__ = "/var/log/nginx/*.log" },
         ]
       }
 
-      loki.source.file "log_scrape" {
-        targets    = local.file_match.local_files.targets
+
+      loki.relabel "add_labels" {
         forward_to = [loki.write.to_loki.receiver]
+        rule {
+          target_label = "hostname"
+          replacement = sys.env("HOSTNAME")
+        }
+      }
+
+
+ 
+
+      loki.source.file "log_scrape" {
+        targets       = local.file_match.local_files.targets
+        forward_to    = [loki.relabel.add_labels.receiver]
         tail_from_end = true
       }
