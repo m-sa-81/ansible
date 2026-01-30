@@ -4,12 +4,50 @@
     name: grafana.grafana.alloy
   vars:
     alloy_config: |
-      prometheus.scrape "default" {
-        targets = [{"__address__" = "localhost:12345"}]
-        forward_to = [prometheus.remote_write.prom.receiver]
+      logging {
+        level  = "info"
+        format = "logfmt"
       }
-      prometheus.remote_write "prom" {
+      
+      loki.write "to_loki" {
         endpoint {
-            url = "<YOUR_PROMETHEUS_PUSH_ENDPOINT>"
+          url = "http://192.168.0.51:3100/loki/api/v1/push"
         }
+      }
+
+      // __journal__* -> echte Loki-Labels machen
+      loki.relabel "journal" {
+        forward_to = []
+
+        rule {
+          source_labels = ["__journal__systemd_unit"]
+          target_label  = "unit"
+        }
+      }
+
+      loki.source.journal "systemd" {
+        forward_to    = [loki.write.to_loki.receiver]
+        relabel_rules = loki.relabel.journal.rules
+
+        // echte Labels (werden in Loki gespeichert!)
+        labels = {
+          job    = "systemd-journal",
+          host   = constants.hostname,
+          source = "journal",
+        }
+
+      }
+
+            
+      local.file_match "local_files" {
+        path_targets = [
+          { __path__ = "/var/log/*.log" },
+          { __path__ = "/var/log/nginx/*.log" },
+        ]
+      }
+
+      loki.source.file "log_scrape" {
+        targets    = local.file_match.local_files.targets
+        forward_to = [loki.write.to_loki.receiver]
+        tail_from_end = true
       }
