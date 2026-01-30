@@ -6,3 +6,6 @@
       - htop
     state: present
 
+
+- import_tasks: alloy.yml    
+

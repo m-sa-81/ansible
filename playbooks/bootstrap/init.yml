@@ -3,4 +3,5 @@
   
   roles:
     - bootstrap
+    - base-linux
 
