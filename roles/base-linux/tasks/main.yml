@@ -5,6 +5,7 @@
       - fail2ban
       - htop
     state: present
+    update_cache: true
 
 
 - import_tasks: alloy.yml    
