@@ -1,0 +1,7 @@
+- name: Ensure busybox container is running
+  community.docker.docker_container:
+    name: busybox-test
+    image: busybox:latest
+    command: sleep 3600
+    state: started
+    restart_policy: unless-stopped
