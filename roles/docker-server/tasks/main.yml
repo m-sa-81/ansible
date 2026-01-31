@@ -1,3 +1,16 @@
+- name: Install prerequisites (Debian/Ubuntu)
+  ansible.builtin.package:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+    state: present
+    update_cache: true
+
+- name: OS-specific 
+  debug:
+    msg: "Installation auf {{ ansible_os_family }}."
+
 - name: Include OS-specific tasks
   ansible.builtin.include_tasks: "{{ ansible_os_family }}.yml"
 

@@ -1,0 +1,11 @@
+
+- name: EPEL Release 
+  ansible.builtin.debug:
+    msg: "Installation auf {{ ansible_distribution }} {{ ansible_distribution_major_version }}."
+
+- name: EPEL Release Paket installieren (OL 8/9/10)
+  ansible.builtin.package:
+    name: "oracle-epel-release-el{{ ansible_distribution_major_version }}"
+    state: present
+  when:
+    - ansible_distribution == "OracleLinux"

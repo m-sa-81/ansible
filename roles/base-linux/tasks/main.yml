@@ -1,5 +1,10 @@
-- name: Installiere chrony + fail2ban
-  package:
+
+
+- import_tasks: epal.yml  
+  when: ansible_distribution == "OracleLinux"
+
+- name: Installiere chrony + fail2ban + htop
+  ansible.builtin.package:
     name: 
       - chrony
       - fail2ban
@@ -7,6 +12,9 @@
     state: present
     update_cache: true
 
+- import_tasks: alloy.yml  
 
-- import_tasks: alloy.yml    
+
+
+
 

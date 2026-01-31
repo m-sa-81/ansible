@@ -32,7 +32,7 @@
         // echte Labels (werden in Loki gespeichert!)
         labels = {
           job    = "systemd-journal",
-          host   = constants.hostname,
+          hostname   = constants.hostname,
           source = "journal",
         }
 
@@ -42,7 +42,7 @@
       local.file_match "local_files" {
         path_targets = [
           { __path__ = "/var/log/*.log" },
-          //{ __path__ = "/var/log/nginx/*.log" },
+          { __path__ = "/var/log/cron" },
         ]
       }
 
@@ -52,6 +52,10 @@
         rule {
           target_label = "hostname"
           replacement = sys.env("HOSTNAME")
+        }
+        rule {
+          source_labels = ["filename"]
+          target_label = "source"
         }
       }
 
