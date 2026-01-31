@@ -1,0 +1,9 @@
+- hosts: all
+  become: true
+  gather_facts: false # <-- Disables fact gathering
+  tasks:
+
+  - name: Shutting down all 
+    community.general.shutdown:
+      delay: 10
+

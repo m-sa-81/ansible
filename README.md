@@ -8,6 +8,14 @@ ansible-galaxy collection install -r requirements.yml -p ./collections
 ansible-galaxy collection list
 </code></pre>
 
+### NEue Rollen anlegen:
+<pre><code>
+ansible-galaxy init roles/nginx
+ansible-galaxy init roles/docker
+</code></pre>
+
+
+
 ### Init-Installation:
 <pre><code>
 First run:
