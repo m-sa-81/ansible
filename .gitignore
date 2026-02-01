@@ -1,6 +1,7 @@
 *.log
 *.env
 
+inventories/prod/host_vars/*
 collections/
 tmp/
 log/

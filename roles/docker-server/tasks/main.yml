@@ -21,3 +21,4 @@
     append: true
 
 - import_tasks: busybox_container.yml      
+- import_tasks: portainer-edge_agent.yml      
