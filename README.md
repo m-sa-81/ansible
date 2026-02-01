@@ -1,5 +1,19 @@
-# ansible
+# Ansible
 My Ansible Homelab
+
+## Installation:
+1. init
+2. base-linux
+    - chrony
+    - fail2ban
+    - htop
+    - Grafana Alloy
+3. docker
+    - busybox
+    - Edge Portainer Agent
+
+
+
 
 
 ### Collections & requirements:
