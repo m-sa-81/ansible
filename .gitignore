@@ -1,7 +1,7 @@
 *.log
 *.env
 
-inventories/prod/host_vars/*
+inventories/prod/host_vars/*yml
 collections/
 tmp/
 log/
