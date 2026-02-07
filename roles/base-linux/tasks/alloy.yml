@@ -9,36 +9,15 @@
         format = "logfmt"
       }
       
-      loki.write "to_loki" {
+      loki.write "loki" {
         endpoint {
           url = "http://192.168.0.51:3100/loki/api/v1/push"
         }
       }
 
-      // __journal__* -> echte Loki-Labels machen
-      loki.relabel "journal" {
-        forward_to = []
-
-        rule {
-          source_labels = ["__journal__systemd_unit"]
-          target_label  = "unit"
-        }
-      }
-
-      loki.source.journal "systemd" {
-        forward_to    = [loki.write.to_loki.receiver]
-        relabel_rules = loki.relabel.journal.rules
-
-        // echte Labels (werden in Loki gespeichert!)
-        labels = {
-          job    = "systemd-journal",
-          hostname   = constants.hostname,
-          source = "journal",
-        }
-
-      }
 
 
+      //logsauslesen
       local.file_match "local_files" {
         path_targets = [
           { __path__ = "/var/log/*.log" },
@@ -48,7 +27,7 @@
 
 
       loki.relabel "add_labels" {
-        forward_to = [loki.write.to_loki.receiver]
+        forward_to = [loki.write.loki.receiver]
         rule {
           target_label = "hostname"
           replacement = sys.env("HOSTNAME")
@@ -59,11 +38,88 @@
         }
       }
 
-
- 
-
       loki.source.file "log_scrape" {
         targets       = local.file_match.local_files.targets
         forward_to    = [loki.relabel.add_labels.receiver]
         tail_from_end = true
+      }
+
+
+
+      //----------------------------------------------------------------------------- 
+
+      loki.source.journal "journal" {
+        relabel_rules = loki.relabel.journal_rules.rules
+        forward_to = [loki.write.loki.receiver]
+      }
+
+
+      loki.relabel "journal_rules" {
+      forward_to = [loki.write.loki.receiver]
+
+      //app aus SYSLOG_IDENTIFIER (internes Journal-Label)
+      //rule {
+      //  source_labels = ["__journal_syslog_identifier"]
+      //  target_label  = "app"
+      //  action        = "replace"
+      //}
+
+      //host aus _HOSTNAME
+      rule {
+        source_labels = ["__journal__hostname"]
+        target_label  = "hostname"
+        action        = "replace"
+      }
+
+       rule {
+              target_label = "source"
+              replacement  = "journal"
+          }
+
+      }
+
+
+
+
+
+      // Discover Docker containers and extract metadata.
+      discovery.docker "linux" {
+        host = "unix:///var/run/docker.sock"
+      }
+
+      // Define a relabeling rule to create a service name from the container name.
+      discovery.relabel "logs_integrations_docker" {
+            targets = []
+        
+            rule {
+                source_labels = ["__meta_docker_container_name"]
+                regex = "/(.*)"
+                target_label = "container_name"
+            }
+
+            rule {
+                source_labels = ["__meta_docker_container_image"]
+                regex = "/(.*)"
+                target_label = "container_image"
+            }
+
+          rule {
+              target_label = "hostname"
+              replacement  = constants.hostname
+          }
+          
+          rule {
+              target_label = "source"
+              replacement  = "docker"
+          }
+
+        }
+
+
+      // Configure a loki.source.docker component to collect logs from Docker containers.
+      loki.source.docker "default" {
+        host       = "unix:///var/run/docker.sock"
+        targets    = discovery.docker.linux.targets
+        relabel_rules = discovery.relabel.logs_integrations_docker.rules
+        forward_to = [loki.write.loki.receiver]
       }

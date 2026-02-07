@@ -20,5 +20,11 @@
     groups: docker
     append: true
 
+- name: Add alloy to docker group
+  ansible.builtin.user:
+    name: "alloy"
+    groups: docker
+    append: true    
+
 - import_tasks: busybox_container.yml      
 - import_tasks: portainer-edge_agent.yml      
