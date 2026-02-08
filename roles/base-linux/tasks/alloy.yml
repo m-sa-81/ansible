@@ -12,6 +12,11 @@
       loki.write "loki" {
         endpoint {
           url = "http://192.168.0.51:3100/loki/api/v1/push"
+          basic_auth {
+          username = "{{ loki_username }}"
+          password = "{{ loki_password }}"
+          }
+
         }
       }
 
