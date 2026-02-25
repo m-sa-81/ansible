@@ -21,6 +21,22 @@
       }
 
 
+      prometheus.remote_write "prometheus" {
+        endpoint {
+          url = "http://192.168.0.51:9090/api/v1/write"
+        }
+      }
+
+
+      prometheus.exporter.unix "local_system" {}
+
+      prometheus.scrape "scrape_metrics" {
+        targets         = prometheus.exporter.unix.local_system.targets
+        forward_to      = [prometheus.remote_write.prometheus.receiver]
+        scrape_interval = "10s"
+      }
+
+
 
       //logsauslesen
       local.file_match "local_files" {

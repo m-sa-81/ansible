@@ -9,6 +9,7 @@
       - chrony
       - fail2ban
       - htop
+      - moreutils
     state: present
     update_cache: true
 
