@@ -1,19 +1,14 @@
+- hosts: all
+  become: true
+  gather_facts: false # <-- Disables fact gathering
+  tasks:
+    - debug:
+        var: ubtu24cis_rule_5_2_4   # ← neu
+        var: ubtu22cis_ntp_servers
+
 - hosts: dockersrv
   become: true
   #gather_facts: false # <-- Disables fact gathering
 
   roles:
     - docker-server
-
-
-- hosts: ubuntu22
-  become: true
-  #gather_facts: false # <-- Disables fact gathering
-  roles:
-    - ansible-lockdown.ubuntu22_cis
-
-- hosts: rhel10
-  become: true
-  #gather_facts: false # <-- Disables fact gathering
-  roles:
-    - ansible-lockdown.rhel10_cis

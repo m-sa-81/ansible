@@ -1,2 +1,5 @@
 loki_username: "loki"
 loki_password: "Test123"
+
+# CIS Benchmark - deaktivierte Rules
+ubtu24cis_rule_5_2_4: false 

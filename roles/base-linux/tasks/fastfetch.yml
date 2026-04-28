@@ -1,0 +1,28 @@
+# Für Oracle Linux — direkt verfügbar
+- name: fastfetch installieren (Oracle/RHEL)
+  ansible.builtin.package:
+    name: fastfetch
+    state: present
+  when: ansible_os_family == "RedHat"
+
+# Für Ubuntu — erst .deb von GitHub
+- name: fastfetch installieren (Ubuntu)
+  ansible.builtin.apt:
+    deb: https://github.com/fastfetch-cli/fastfetch/releases/latest/download/fastfetch-linux-amd64.deb
+    state: present
+  when: ansible_os_family == "Debian"
+
+
+- name: fastfetch in globale bashrc eintragen (Ubuntu)
+  ansible.builtin.lineinfile:
+    path: /etc/bash.bashrc
+    line: "fastfetch"
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: fastfetch in globale bashrc eintragen (Oracle/RHEL)
+  ansible.builtin.lineinfile:
+    path: /etc/bashrc
+    line: "fastfetch"
+    state: present
+  when: ansible_os_family == "RedHat"

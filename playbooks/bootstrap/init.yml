@@ -4,5 +4,16 @@
   roles:
     - bootstrap
     - base-linux
-    - cis-benchmark
+
+- hosts: cis_ubuntu24
+  become: true
+  #gather_facts: false # <-- Disables fact gathering
+  roles:
+    - ansible-lockdown.ubuntu24_cis
+
+- hosts: cis_rhel10
+  become: true
+  #gather_facts: false # <-- Disables fact gathering
+  roles:
+    - ansible-lockdown.rhel10_cis    
 
